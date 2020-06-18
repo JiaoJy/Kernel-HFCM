@@ -100,20 +100,6 @@ def re_normalize(ori_data, maxV, minV, flag='01'):
 
 def random_deposition(X, n = 2):
     N = len(X)
-#    Fx1 = np.zeros([n, N])
-#    Fx2 = np.zeros([n, N])
-#    Fx3 = np.zeros([n, N])
-#    Fx4 = np.zeros([n, N])
-#    for i in range(n):
-#        Fx1[i, :] = np.power(X, i+2)
-#        Fx2[i, :] = 1 - Fx1[i, :]
-#        Fx3[i, :] = np.power(X, 1/(i+2))
-#        Fx4[i, :] = 1- Fx3[i, :]
-#    Y = np.vstack((X, Fx1))    
-#    Y = np.vstack((Y, Fx2))
-#    Y = np.vstack((Y, Fx3))
-#    Y = np.vstack((Y, Fx4))
-#    Y = np.vstack((Y, 1-X))
     Fx1 = np.zeros([n, N])
     Fx3 = np.zeros([n, N])
     Fx2 = np.zeros([n, N])
@@ -130,18 +116,6 @@ def random_deposition(X, n = 2):
     return Y
 
 def reconstruct(Y, Totalnum, nth):
-#    if nth == 0:
-#        X = Y
-#    elif nth == Totalnum - 1:
-#        X = 1 - Y
-#    elif nth<=((Totalnum - 2)/4):
-#        X = np.power(Y, 1/(nth + 1))
-#    elif nth < (Totalnum/2):
-#        X = np.power(1-Y, 1/(nth - (Totalnum - 2)/4 + 1))
-#    elif nth < (Totalnum*3/4):
-#        X = np.power(Y, nth - (Totalnum - 2)/2 + 1)
-#    else:
-#        X = np.power(1-Y, nth - (Totalnum - 2)*3/4 + 1)
     if nth == 0:
         X = Y
     elif nth<=((Totalnum - 1)/4):
@@ -159,15 +133,11 @@ def HFCM_ridge(dataset1, ratio=0.7, plot_flag=False):
     normalize_style = '01'
     dataset_copy = dataset1.copy()
     dataset, maxV, minV = normalize(dataset1, normalize_style)
-    # dataset = 1 - dataset
-    # dataset = dataset1
     # steepness of sigmoid function
-    # belta = 1
     belta = 5   
 
     # partition dataset into train set and test set\
     if len(dataset) > 30:
-        # ratio = 0.83
         train_data, test_data = splitData(dataset, ratio)
     else:
         train_data, test_data = splitData(dataset, 1)
@@ -180,25 +150,14 @@ def HFCM_ridge(dataset1, ratio=0.7, plot_flag=False):
     validation_ratio = 0.2
     len_validation_data = int(len_train_data * validation_ratio)
 
-    # small_alpha = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18, 1e-19, 1e-20]
-    # small_alpha = [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
-    # small_alpha = [ 1e-5,3e-5,5e-5,7e-5, 9e-5, 1e-4, 3e-4,5e-4,7e-4,9e-4]
-    # small_alpha = [ 1e-7,3e-7,5e-7,7e-7, 9e-7, 1e-6, 3e-6,5e-6,7e-6,9e-6]
-    # small_alpha = [1e-6, 5e-6, 1e-7,5e-7, 1e-8, 5e-8, 1e-9, 5e-9,  1e-10, 5e-10]
-    # small_alpha = [1e-11, 5e-11, 1e-12,5e-12, 1e-13, 5e-13, 1e-14, 5e-14,  1e-15, 5e-15]
-    # small_alpha = [1e-16, 5e-16, 1e-17,5e-17, 1e-18, 5e-18, 1e-19, 5e-19,  1e-20, 5e-20]
-    # small_alpha = [1e-12, 1e-14, 1e-20]
     small_alpha = [1e-12]
     # small_alpha = [1e-2, 1e-4, 1e-6, 1e-8, 1e-10, 1e-12, 1e-14, 1e-16]
     # small_alpha = [1e-3, 1e-5, 1e-7, 1e-12, 1e-14, 1e-20]
-    
     Order_list = list(range(2, 3))
     Nc_list = list(range(6, 7))
     alpha_list = small_alpha
-    # rmse_total = np.zeros(shape=(len(Nc_list), len(Order_list))) 
     best_Order = -1
     best_Nc = -1
-    # Nc = 6  # Fcm节点数
     Nf = 5 # 函数家族数除以4的值减1
     epochs = 50
     # 最优参数
@@ -343,7 +302,6 @@ def HFCM_ridge(dataset1, ratio=0.7, plot_flag=False):
                         best_steepness = steepness
                         best_alpha = alpha     
     # print(rmse_total)
-    # best_predictedTimeseries = 1 - best_predictedTimeseries
     data_predicted = re_normalize(best_predictedTimeseries, maxV, minV, normalize_style)
     return data_predicted, best_Order, best_Nc, best_alpha
 
@@ -368,32 +326,19 @@ def analyze_paras_HFCM(dataset1, ratio=0.7):
     # best parameters
     validation_ratio = 0.2
     len_validation_data = int(len_train_data * validation_ratio)
-
-    # small_alpha = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18, 1e-19, 1e-20]
     # small_alpha = [1e-2, 1e-4, 1e-6, 1e-8, 1e-10, 1e-12, 1e-14, 1e-16]
-    # small_alpha = [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
-    # small_alpha = [1e-6, 5e-6, 1e-7,5e-7, 1e-8, 5e-8, 1e-9, 5e-9,  1e-10, 5e-10]
-    # small_alpha = [1e-11, 5e-11, 1e-12,5e-12, 1e-13, 5e-13, 1e-14, 5e-14,  1e-15, 5e-15]
-    # small_alpha = [1e-16, 5e-16, 1e-17,5e-17, 1e-18, 5e-18, 1e-19, 5e-19,  1e-20, 5e-20]
-    # small_alpha = [ 1e-5,3e-5,5e-5,7e-5, 9e-5, 1e-4, 3e-4,5e-4,7e-4,9e-4]
-    # small_alpha = [ 1e-7,3e-7,5e-7,7e-7, 9e-7, 1e-6, 3e-6,5e-6,7e-6,9e-6]
-    small_alpha = [1e-3, 1e-12, 1e-14]
-    
-#    Order_list = list(range(2, 12))
-#    Nc_list = list(range(2, 12))
+    small_alpha = [1e-3]
     # for analysizing alpha
-    Order_list = list(range(2, 4))
-    Nc_list = list(range(6, 7))
+    Order_list = list(range(2, 7))
+    Nc_list = list(range(2, 7))
     alpha_list = list(small_alpha)
     rmse_total = np.zeros(shape=(len(Nc_list), len(Order_list)))
     rmse_byalpha = np.zeros(len(alpha_list))
-    # Nc = 6  # Fcm节点数
     Nf = 5 # 函数家族数除以4的值减1
     epochs = 20
     # 最优参数
     min_rmse = np.inf
     best_steepness = None
-
     for Nidx, Nc in enumerate(Nc_list):
         for snap in range(epochs):
             Allinall = random_deposition(dataset, Nf)
@@ -509,7 +454,6 @@ def analyze_parameter():
 
     Nc_list = df1.index.values
     Order_list = df1.columns.values
-    # Alpha_list = [1e-3, 1e-5, 1e-7, 1e-12, 1e-14, 1e-20]
     Alpha_list = [1e-2, 1e-4, 1e-6, 1e-8, 1e-10, 1e-12, 1e-14, 1e-16]
 
     
@@ -553,9 +497,6 @@ def analyze_parameter():
     sp500 = pd.read_csv(sp500_src, delimiter=',', parse_dates=[0], date_parser=dateparse).as_matrix()
     dataset = np.array(sp500[:, 1], dtype=np.float)
     df7  ,rmse_byalpha7= analyze_paras_HFCM(dataset, ratio=ratio)
-    
-#    rmsealpha = np.vstack((rmse_byalpha1,rmse_byalpha2,rmse_byalpha3,rmse_byalpha4,rmse_byalpha5,rmse_byalpha6,rmse_byalpha7))
-#    dfalpha = pd.DataFrame(rmsealpha, index=list(range(1, 8)), columns=Alpha_list)
     # save df1 & df2 to excel
     writer = pd.ExcelWriter('output_sunspot_sp500.xlsx')
     df1.to_excel(writer, 'df1')
@@ -674,15 +615,7 @@ def main():
     sp500 = pd.read_csv(sp500_src, delimiter=',', parse_dates=[0], date_parser=dateparse)
     dataset = np.array(sp500.iloc[:, 1], dtype=np.float)
     time = np.array(sp500.iloc[:, 0])
-    ratio = 0.7
-#    raw_data = pd.read_csv("./newdata/nasdaq100_padding.csv")
-#    dataset = raw_data['NDX']
-#    tempp = len(dataset)
-#    time = np.zeros(tempp)
-#    for i in range(tempp):
-#        time[i] = i
-#    ratio = 0.7 
-    
+    ratio = 0.7    
     # partition dataset into train set and test set
     length = len(dataset)
     len_train_data = int(length * ratio)
@@ -693,33 +626,7 @@ def main():
 
     # perform prediction
     data_predicted, best_Order, best_Nc, best_alpha = HFCM_ridge(dataset, ratio)
-    import seaborn as sns
-    '''
-    # first line for plot in paper 
-    normalize_style = '01'
-    dataset_copy = dataset.copy()
-    datasetplot, maxV, minV = normalize(dataset_copy, normalize_style)
-    Allinall = random_deposition(datasetplot, 5)
-    len_All, wth_All = np.shape(Allinall)
-    location = random.sample(range(0, len_All), 8)
-    coffis = np.zeros((8, wth_All))
-    pre = np.zeros(shape = [8, wth_All])
-    for i in range(8):
-        coffis[i, :] = Allinall[location[i], :]
-    for i in range(8):
-        pre[i, :] = re_normalize(coffis[i, :], maxV, minV, normalize_style)
-        plt.style.use(['ggplot','seaborn-paper'])
-        fig4 = plt.figure()
-        ax41 = fig4.add_subplot(111)
-        ax41.plot(time, pre[i, :], 'm:')
-        plt.savefig(r"C:/Users/Administrator/Desktop/idea190910/sp500fearturetime = %d.png" % i)
-#        ax41.plot(time, pre[i, :], 'b:')
-#        plt.savefig(r"C:/Users/Administrator/Desktop/idea190910/predictedtime = %d.png" % i)
-        plt.show()
-        
-    # last line for plot in paper 
-    '''
-    
+    import seaborn as sns    
     # Outcomes
     # Error of the whole dataset
     mse, rmse, nmse = statistics(dataset, data_predicted)
@@ -753,20 +660,25 @@ def main():
     # plt.style.use(['seaborn-paper'])
     plt.style.use(['ggplot','seaborn-paper'])
 
-    fig4 = plt.figure()
+    fig4 = plt.figure(figsize = (6.37, 4.4))
     ax41 = fig4.add_subplot(111)
-    
+    font1 = {'family' : 'Times New Roman',
+    'weight' : 'normal',
+    'size'   : 16,
+    }
 
-    ax41.plot(time, dataset, 'r:', label='the original data')
-    ax41.plot(time, data_predicted, 'k:', label='the predicted data')
+    ax41.plot(time, dataset, 'r:', label='original data')
+    ax41.plot(time, data_predicted, 'k:', label='predicted data')
     # ax41.plot(time[len_train_data:], data_predicted[len_train_data:], 'b:', label='the predicted data')
-    ax41.set_ylabel("Magnitude")
-    ax41.set_xlabel('Time')
-    # ax41.set_title('time series prediction ')
-
-    # ax41.set_ylim([0.35, 1.4])  # for MG-chaos having a better visualization
-
-    ax41.legend()
+    ax41.set_ylabel("Magnitude", font1)
+    ax41.set_xlabel('Time', font1)
+    
+    plt.tick_params(labelsize=16)
+    labels = ax41.get_xticklabels() + ax41.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    for tick in ax41.get_xticklabels():
+        tick.set_rotation(30)    
+    ax41.legend(prop = font1)
     plt.tight_layout()
    
     # ['N225', 'DJI', 'TNX', 'IXIC', 'GSPC', 'SP500', 'RUT']
@@ -774,7 +686,7 @@ def main():
     # plt.savefig(r"./Outcome_for_papers/Length=%d.pdf" % length)
     if not os.path.exists(r"./Outcome_for_papers"):
         os.makedirs(r"./Outcome_for_papers")
-    plt.savefig(r"./Outcome_for_papers/Length_TNX1008 = %d.png" % length)
+    plt.savefig(r"./Outcome_for_papers/DJI = %d.tiff" % length,dpi = 300)
     # plt.close()
     plt.show()
 
